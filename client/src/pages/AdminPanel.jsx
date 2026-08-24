@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../api';
 
 const STATUS_OPTIONS = [
   'pending',
   'preparing',
-  'out-fordelivery',
+  'out-for-delivery',
   'delivered',
   'cancelled',
 ];
@@ -24,25 +25,18 @@ const AdminPanel = () => {
     setLoading(true);
     setError('');
     try {
-      // First try fetching admin-specific combined endpoint
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch('/api/v1/orders/admin/all', { headers });
+      const data = await apiFetch('/orders/admin/all', { headers });
 
-      if (res.ok) {
-        const data = await res.json();
+      if (data && data.success) {
         setStats({
           totalRestaurants: data.totalRestaurants || 0,
           totalOrders: data.totalOrders || 0,
           orders: data.orders || [],
         });
       } else {
-        // Fallback: fetch restaurants & orders independently
-        const [resResp, ordResp] = await Promise.all([
-          fetch('/api/v1/restaurants'),
-          fetch('/api/v1/orders', { headers }),
-        ]);
-        const resData = await resResp.json();
-        const ordData = ordResp.ok ? await ordResp.json() : { orders: [] };
+        const resData = await apiFetch('/restaurants');
+        const ordData = token ? await apiFetch('/orders', { headers }).catch(() => ({ orders: [] })) : { orders: [] };
 
         setStats({
           totalRestaurants: resData.restaurants?.length || 0,
@@ -66,7 +60,7 @@ const AdminPanel = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     setActionMessage('');
     try {
-      const res = await fetch(`/api/v1/orders/${orderId}/status`, {
+      const data = await apiFetch(`/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -75,8 +69,7 @@ const AdminPanel = () => {
         body: JSON.stringify({ status: newStatus }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Status update failed');
       }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../api';
 
 const OrderPage = () => {
   const { customer, token } = useAuth();
@@ -19,8 +20,7 @@ const OrderPage = () => {
 
   // Fetch available restaurants for the dropdown
   useEffect(() => {
-    fetch('/api/v1/restaurants')
-      .then((res) => res.json())
+    apiFetch('/restaurants')
       .then((data) => {
         if (data.restaurants) {
           setAvailableRestaurants(data.restaurants);
@@ -36,12 +36,11 @@ const OrderPage = () => {
   const fetchCustomerOrders = () => {
     if (!token) return;
     setLoadingOrders(true);
-    fetch('/api/v1/orders', {
+    apiFetch('/orders', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
       .then((data) => {
         if (data.orders) {
           setCustomerOrders(data.orders);
@@ -100,7 +99,7 @@ const OrderPage = () => {
     };
 
     try {
-      const res = await fetch('/api/v1/orders', {
+      const data = await apiFetch('/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,9 +108,7 @@ const OrderPage = () => {
         body: JSON.stringify(orderPayload),
       });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Failed to place order');
       }
 

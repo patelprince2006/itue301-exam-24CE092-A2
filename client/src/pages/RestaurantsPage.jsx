@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import RestaurantCard from '../components/RestaurantCard';
+import { apiFetch } from '../api';
 
 const RestaurantsPage = () => {
   // Conceptual states required by Task 4
@@ -15,13 +16,8 @@ const RestaurantsPage = () => {
     setLoading(true);
     setError('');
 
-    fetch('/api/v1/restaurants')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Server response not OK');
-        }
-        return res.json();
-      })
+    // Fetch restaurants from GET /api/v1/restaurants
+    apiFetch('/restaurants')
       .then((data) => {
         if (data && data.restaurants) {
           setRestaurants(data.restaurants);

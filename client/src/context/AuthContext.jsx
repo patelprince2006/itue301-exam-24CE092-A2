@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiFetch } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email) => {
     try {
       setAuthError('');
-      const response = await fetch('/api/v1/auth/login', {
+      const data = await apiFetch('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,9 +27,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Login failed');
       }
 
@@ -48,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const register = async ({ name, email, phone, address }) => {
     try {
       setAuthError('');
-      const response = await fetch('/api/v1/auth/register', {
+      const data = await apiFetch('/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,9 +55,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ name, email, phone, address }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Registration failed');
       }
 
