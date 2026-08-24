@@ -1,13 +1,11 @@
 # QuickBite Food Ordering System
 
-A full-stack food ordering web application developed for the **ITUE301 – Advanced Web Development Frameworks** practical examination at **CSPIT, CHARUSAT**.
-
+A full-stack food ordering web application developed for the **ITUE301 – Advanced Web Development Frameworks**.
 QuickBite allows customers to browse restaurants and place food orders through a web interface. The system also provides protected order APIs, authentication, restaurant management data, and an admin panel.
 
 ## 👨‍💻 Project Information
 
 * **Course:** ITUE301 – Advanced Web Development Frameworks
-* **Examination:** Open-Book Practical Examination
 * **Set:** A
 * **Project:** QuickBite Food Ordering System
 * **Frontend:** React.js
@@ -519,19 +517,6 @@ Restaurant Owner
 Admin
 ```
 
-## 📌 Academic Submission
-
-This project is developed for:
-
-**ITUE301 – Advanced Web Development Frameworks**
-**CSPIT, CHARUSAT**
-**B.Tech Semester 5 – AY 2026–27**
-**Set A – QuickBite Food Ordering System**
 
 The examination specifies a public GitHub repository containing the frontend, backend, README.md and `.env.example`.
 
----
-
-## ⚠️ Note
-
-This project is intended for academic/practical examination purposes. All submitted code should be understood by the student and explained during the viva, as required by the examination instructions.
