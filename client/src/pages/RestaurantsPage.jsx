@@ -7,8 +7,9 @@ const RestaurantsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Client-side search state
+  // Client-side search & filter states
   const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState('ALL'); // 'ALL' | 'OPEN' | 'RATED'
 
   useEffect(() => {
     setLoading(true);
@@ -36,35 +37,79 @@ const RestaurantsPage = () => {
         setError('Failed to load restaurants.');
         setLoading(false);
       });
-  }, []); // Empty dependency array ensures fetch runs only once on mount
+  }, []); // Empty dependency array ensures API request runs only on mount
 
-  // Client-side search filter without triggering new API calls
-  const filteredRestaurants = restaurants.filter((restaurant) =>
-    restaurant.name.toLowerCase().includes(search.toLowerCase()) ||
-    restaurant.cuisine.toLowerCase().includes(search.toLowerCase())
-  );
+  // Client-side search and quick filter without extra API calls
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const matchesSearch =
+      restaurant.name.toLowerCase().includes(search.toLowerCase()) ||
+      restaurant.cuisine.toLowerCase().includes(search.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (filterType === 'OPEN') return restaurant.isOpen === true;
+    if (filterType === 'RATED') return Number(restaurant.rating) >= 4.0;
+
+    return true;
+  });
 
   return (
     <div className="container restaurants-page">
-      <div className="page-header">
-        <h2>Available Restaurants</h2>
-        <p>Discover top-rated cuisines and order your favorite dishes</p>
+      {/* Top Breadcrumb & Title */}
+      <div className="page-header-zomato">
+        <div className="title-area">
+          <h2>Delivery Restaurants in Ahmedabad</h2>
+          <p className="sub-counter">
+            Showing {filteredRestaurants.length} of {restaurants.length} food places
+          </p>
+        </div>
+
+        {/* Client-side search input */}
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              className="search-box"
+              placeholder="Search by restaurant name or cuisine (e.g. Pizza, Indian, Burger)..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button className="clear-btn" onClick={() => setSearch('')}>
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Client-side search box */}
-      <div className="search-container">
-        <input
-          type="text"
-          className="search-box"
-          placeholder="Search restaurants..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Zomato Quick Filter Chips */}
+      <div className="filter-chips-bar">
+        <button
+          className={`filter-chip ${filterType === 'ALL' ? 'active' : ''}`}
+          onClick={() => setFilterType('ALL')}
+        >
+          All ({restaurants.length})
+        </button>
+        <button
+          className={`filter-chip ${filterType === 'OPEN' ? 'active' : ''}`}
+          onClick={() => setFilterType('OPEN')}
+        >
+          🟢 Open Now
+        </button>
+        <button
+          className={`filter-chip ${filterType === 'RATED' ? 'active' : ''}`}
+          onClick={() => setFilterType('RATED')}
+        >
+          ⭐ Rating 4.0+
+        </button>
       </div>
 
       {/* Loading State */}
       {loading && (
         <div className="loading">
+          <div className="zomato-spinner"></div>
           <p>Loading restaurants...</p>
         </div>
       )}
@@ -73,6 +118,13 @@ const RestaurantsPage = () => {
       {!loading && error && (
         <div className="error">
           <p>{error}</p>
+          <button
+            className="button btn-primary btn-sm"
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '0.8rem' }}
+          >
+            Retry Loading
+          </button>
         </div>
       )}
 
@@ -80,8 +132,19 @@ const RestaurantsPage = () => {
       {!loading && !error && (
         <>
           {filteredRestaurants.length === 0 ? (
-            <div className="no-results">
-              <p>No restaurants found matching "{search}".</p>
+            <div className="no-results-zomato">
+              <span className="empty-icon">🍽️</span>
+              <h3>No matching restaurants found</h3>
+              <p>Try searching for a different dish or clearing your search filters.</p>
+              <button
+                className="button btn-secondary btn-sm"
+                onClick={() => {
+                  setSearch('');
+                  setFilterType('ALL');
+                }}
+              >
+                Clear all filters
+              </button>
             </div>
           ) : (
             <div className="restaurant-grid">

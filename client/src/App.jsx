@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import RestaurantsPage from './pages/RestaurantsPage';
 import OrderPage from './pages/OrderPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Task 2: Lazy load AdminPanel using React.lazy()
 const AdminPanel = React.lazy(() => import('./pages/AdminPanel'));
@@ -20,6 +21,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/restaurants" element={<RestaurantsPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Protected Route: /order */}
           <Route
@@ -38,7 +40,8 @@ function App() {
               <Suspense
                 fallback={
                   <div className="container loading">
-                    <p>Loading Admin Panel...</p>
+                    <div className="zomato-spinner"></div>
+                    <p>Loading Admin Dashboard...</p>
                   </div>
                 }
               >
@@ -60,8 +63,12 @@ function App() {
         </Routes>
       </main>
       <footer className="footer">
-        <div className="container">
-          <p>© {new Date().getFullYear()} QuickBite Online Food Ordering System. College Practical Exam.</p>
+        <div className="container footer-content">
+          <div className="footer-brand">
+            <span className="brand-logo-text">Quick<em>Bite</em></span>
+            <p>India's favourite food delivery platform</p>
+          </div>
+          <p className="footer-copy">© {new Date().getFullYear()} QuickBite Food Ordering. ITUE301 Examination.</p>
         </div>
       </footer>
     </div>

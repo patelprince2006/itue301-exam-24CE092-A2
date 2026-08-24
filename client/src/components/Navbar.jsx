@@ -12,13 +12,20 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <header className="navbar">
       <div className="navbar-container">
+        {/* Zomato-styled Brand Logo */}
         <Link to="/" className="navbar-brand">
-          <span className="brand-icon">🍔</span>
-          <span className="brand-name">QuickBite</span>
+          <span className="brand-logo-text">Quick<em>Bite</em></span>
         </Link>
 
+        {/* Location pill */}
+        <div className="location-pill">
+          <span className="pin-icon">📍</span>
+          <span className="location-text">Ahmedabad, India</span>
+        </div>
+
+        {/* Navigation Links using React Router Link without reload */}
         <div className="navbar-links">
           <NavLink
             to="/"
@@ -37,36 +44,41 @@ const Navbar = () => {
             to="/order"
             className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
           >
-            Order
+            Order Food
           </NavLink>
           <NavLink
             to="/admin"
             className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
           >
-            Admin
+            Admin Panel
           </NavLink>
         </div>
 
+        {/* Auth Buttons / Active Profile */}
         <div className="navbar-auth">
           {isAuthenticated && customer ? (
             <div className="user-section">
-              <span className="user-greeting">
-                👤 <strong>{customer.name}</strong>
-              </span>
-              <button className="button btn-logout" onClick={handleLogout}>
+              <div className="user-avatar-badge">
+                <span className="avatar-circle">{customer.name.charAt(0).toUpperCase()}</span>
+                <span className="user-name-label">{customer.name}</span>
+              </div>
+              <button className="button btn-logout" onClick={handleLogout} title="Log Out">
                 Logout
               </button>
             </div>
           ) : (
             <div className="guest-section">
-              <Link to="/" className="button btn-login-link">
-                Login
+              <Link to="/" className="nav-auth-link">
+                Log in
+              </Link>
+              <Link to="/register" className="button btn-primary btn-sm">
+                Sign up
               </Link>
             </div>
           )}
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
