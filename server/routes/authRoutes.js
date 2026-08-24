@@ -113,6 +113,60 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
+// POST /api/v1/auth/admin/login - Authenticate platform administrator
+router.post("/admin/login", async (req, res, next) => {
+  try {
+    const { adminId, password } = req.body;
+
+    if (!adminId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin ID and Password are required",
+      });
+    }
+
+    // Default admin credentials for examination
+    const validAdminIds = ["admin", "admin@quickbite.com", "admin123"];
+    const validPassword = "admin123";
+
+    if (
+      validAdminIds.includes(adminId.trim().toLowerCase()) &&
+      password.trim() === validPassword
+    ) {
+      const secret = process.env.JWT_SECRET || "quickbite_secret_key";
+      const token = jwt.sign(
+        {
+          id: "admin_master",
+          name: "System Administrator",
+          email: "admin@quickbite.com",
+          role: "admin",
+        },
+        secret,
+        { expiresIn: "24h" }
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Admin authenticated successfully",
+        token,
+        admin: {
+          id: "admin_master",
+          name: "System Administrator",
+          email: "admin@quickbite.com",
+          role: "admin",
+        },
+      });
+    }
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Admin ID or Password. (Hint: admin / admin123)",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /api/v1/auth/me - Check current customer profile (optional helper)
 router.get("/customers", async (req, res, next) => {
   try {

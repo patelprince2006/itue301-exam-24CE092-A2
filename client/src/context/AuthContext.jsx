@@ -4,6 +4,7 @@ import { apiFetch } from '../api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  // Customer Authentication State
   const [customer, setCustomer] = useState(() => {
     const savedCustomer = localStorage.getItem('quickbite_customer');
     return savedCustomer ? JSON.parse(savedCustomer) : null;
@@ -13,9 +14,20 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem('quickbite_token') || null;
   });
 
-  const [authError, setAuthError] = useState('');
+  // Admin Authentication State
+  const [adminUser, setAdminUser] = useState(() => {
+    const savedAdmin = localStorage.getItem('quickbite_admin');
+    return savedAdmin ? JSON.parse(savedAdmin) : null;
+  });
 
-  // Login function
+  const [adminToken, setAdminToken] = useState(() => {
+    return localStorage.getItem('quickbite_admin_token') || null;
+  });
+
+  const [authError, setAuthError] = useState('');
+  const [adminError, setAdminError] = useState('');
+
+  // Customer Login function
   const login = async (email) => {
     try {
       setAuthError('');
@@ -43,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register function
+  // Customer Register function
   const register = async ({ name, email, phone, address }) => {
     try {
       setAuthError('');
@@ -71,7 +83,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
+  // Customer Logout function
   const logout = () => {
     setCustomer(null);
     setToken(null);
@@ -80,9 +92,47 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('quickbite_customer');
   };
 
+  // Admin Login function (Protected by ID and Password)
+  const adminLogin = async (adminId, password) => {
+    try {
+      setAdminError('');
+      const data = await apiFetch('/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ adminId, password }),
+      });
+
+      if (!data.success) {
+        throw new Error(data.message || 'Admin login failed');
+      }
+
+      setAdminUser(data.admin);
+      setAdminToken(data.token);
+      localStorage.setItem('quickbite_admin_token', data.token);
+      localStorage.setItem('quickbite_admin', JSON.stringify(data.admin));
+
+      return { success: true, admin: data.admin };
+    } catch (err) {
+      setAdminError(err.message || 'Admin authentication error');
+      return { success: false, message: err.message };
+    }
+  };
+
+  // Admin Logout function
+  const adminLogout = () => {
+    setAdminUser(null);
+    setAdminToken(null);
+    setAdminError('');
+    localStorage.removeItem('quickbite_admin_token');
+    localStorage.removeItem('quickbite_admin');
+  };
+
   return (
     <AuthContext.Provider
       value={{
+        // Customer Context
         customer,
         token,
         isAuthenticated: !!token,
@@ -90,6 +140,14 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         authError,
+
+        // Admin Context
+        adminUser,
+        adminToken,
+        isAdminAuthenticated: !!adminToken,
+        adminLogin,
+        adminLogout,
+        adminError,
       }}
     >
       {children}

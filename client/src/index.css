@@ -968,6 +968,49 @@ body {
 .status-cancelled { background-color: #f8d7da; color: #721c24; }
 
 /* --- Admin Panel --- */
+.admin-header-banner {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--zomato-border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.admin-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-subtext {
+  font-size: 0.9rem;
+  color: var(--zomato-gray);
+  margin-top: 0.2rem;
+}
+
+.admin-lock-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.lock-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.table-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
