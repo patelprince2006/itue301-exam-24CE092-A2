@@ -2,14 +2,18 @@
   "name": "quickbite-food-ordering-system",
   "version": "1.0.0",
   "description": "QuickBite MERN Stack Food Ordering Application",
+  "main": "server/server.js",
   "scripts": {
-    "start": "concurrently \"npm --prefix server start\" \"npm --prefix client start\"",
+    "start": "node server/server.js",
+    "build": "npm run render-build",
+    "render-build": "npm --prefix server install && npm --prefix client install && npm --prefix client run build",
+    "postinstall": "npm --prefix server install && npm --prefix client install",
     "dev": "concurrently \"npm --prefix server start\" \"npm --prefix client start\"",
     "server": "npm --prefix server start",
     "client": "npm --prefix client start",
     "seed": "npm --prefix server run seed"
   },
-  "devDependencies": {
+  "dependencies": {
     "concurrently": "^8.2.2"
   }
 }

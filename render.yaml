@@ -1,0 +1,18 @@
+# Render Blueprint for QuickBite Food Ordering System
+services:
+  # Full-Stack Web Service (Node.js Server + Static React Client)
+  - type: web
+    name: quickbite-food-ordering
+    env: node
+    plan: free
+    buildCommand: npm run render-build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: "*"

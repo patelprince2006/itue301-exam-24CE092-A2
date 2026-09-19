@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -26,20 +28,40 @@ app.use(express.json());
 // 3. Global Request Logger Middleware
 app.use(requestLogger);
 
-// 4. Base / Health check route
-app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "QuickBite Online Food Ordering API is running",
-    version: "v1",
-  });
-});
-
-// 5. API Routes
+// 4. API Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/restaurants", restaurantRoutes);
 app.use("/api/v1/orders", orderRoutes);
 
-// 6. 404 Route Handler
+// Health check API endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    message: "QuickBite Online Food Ordering API is running",
+    version: "v1",
+    status: "healthy"
+  });
+});
+
+// 5. Serve Frontend Static Assets (if client/dist exists)
+const clientDistPath = path.join(__dirname, "../client/dist");
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get("*", (req, res, next) => {
+    if (req.originalUrl.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      message: "QuickBite Online Food Ordering API is running",
+      version: "v1",
+    });
+  });
+}
+
+// 6. 404 Route Handler for unhandled API endpoints
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -55,15 +77,15 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log(`[MongoDB] Connected successfully to: ${MONGO_URI}`);
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`[QuickBite Server] Server listening on port ${PORT}`);
       console.log(`[API Base] http://localhost:${PORT}/api/v1/`);
     });
   })
   .catch((err) => {
     console.error(`[MongoDB] Connection error:`, err.message);
-    // Still start server to facilitate testing or debugging
-    app.listen(PORT, () => {
+    // Still start server to facilitate testing or debugging on Render
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`[QuickBite Server] Running without active MongoDB connection on port ${PORT}`);
     });
   });
