@@ -15,8 +15,10 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI =
   process.env.MONGO_URI || "mongodb://127.0.0.1:27017/quickbite";
 
-// 1. CORS Middleware
-app.use(cors());
+// 1. CORS Middleware (Supports production CORS_ORIGIN env var for Render)
+const corsOrigin = process.env.CORS_ORIGIN || "*";
+const corsOptions = corsOrigin === "*" ? {} : { origin: corsOrigin.split(",").map(o => o.trim()), credentials: true };
+app.use(cors(corsOptions));
 
 // 2. Body Parser Middleware
 app.use(express.json());
